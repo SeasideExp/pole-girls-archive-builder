@@ -1,0 +1,1306 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>POLE GIRLS ARCHIVE // 架線柱ちゃん キャラクターアーカイブ</title>
+
+  <!-- エディタUI用のTailwind CSS（書き出される公開用HTMLには依存しません） -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- 視認性と近未来感を両立するWebフォント（オフライン時はシステムフォントへフォールバック） -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,600;0,700;1,700&family=Inter:wght@400;600;700;800&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet" />
+
+  <!-- エディタ専用スタイル -->
+  <style id="editor-chrome-styles">
+    :root {
+      --studio-navy: #142238;
+      --studio-navy-light: #1e3250;
+      --studio-cyan: #00aeff;
+      --studio-border: #dce6f2;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Inter", "Noto Sans JP", "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+      background-color: #eef3f9;
+      color: #1b2b44;
+      overflow: hidden;
+    }
+
+    /* スクロールバーの洗練化 */
+    .studio-scroll::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .studio-scroll::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .studio-scroll::-webkit-scrollbar-thumb {
+      background: rgba(27, 43, 68, 0.2);
+      border-radius: 999px;
+    }
+    .studio-scroll::-webkit-scrollbar-thumb:hover {
+      background: rgba(0, 174, 255, 0.5);
+    }
+
+    /* 編集モード・デスクトップ時にモーダルをプレビュー領域中央へ合わせる調整 */
+    @media (min-width: 1024px) {
+      body.edit-mode-active .ba-modal-overlay {
+        left: 392px;
+        top: var(--studio-toolbar-h, 53px);
+      }
+    }
+
+    @media (max-width: 1023px) {
+      #editor-sidebar,
+      #mobile-sidebar-backdrop {
+        top: var(--studio-toolbar-h, 52px);
+      }
+    }
+
+    /* エディタの斜めボタン装飾 */
+    .btn-skew {
+      transform: skewX(-10deg);
+    }
+    .btn-skew > * {
+      transform: skewX(10deg);
+    }
+
+    /* トースト通知アニメーション */
+    @keyframes toastIn {
+      from {
+        opacity: 0;
+        transform: translateY(14px) scale(0.96);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+    .toast-enter {
+      animation: toastIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    /* ===================================================================
+       オフライン環境フォールバックCSS（Tailwind CDN未読込時でもレイアウト・非表示を維持）
+       =================================================================== */
+    .hidden,
+    #mobile-sidebar-backdrop.hidden,
+    #editor-sidebar.hidden,
+    input[type="file"].hidden {
+      display: none;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    body {
+      height: 100vh;
+      height: 100dvh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    :where(#studio-toolbar) {
+      position: relative;
+      z-index: 40;
+      flex-shrink: 0;
+      background: var(--studio-navy);
+      color: #ffffff;
+      border-bottom: 1px solid rgba(56, 189, 248, 0.3);
+    }
+
+    :where(#studio-toolbar > div:first-child) {
+      height: 2px;
+      width: 100%;
+      background: linear-gradient(90deg, #00aeff, #38bdf8, #1289f6);
+    }
+
+    :where(#studio-toolbar > div:last-child) {
+      padding: 8px 16px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    :where(#studio-toolbar > div:last-child > div) {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    :where(#studio-toolbar button) {
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      background: rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+      border-radius: 8px;
+      padding: 6px 10px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    :where(#studio-toolbar button[aria-pressed="true"]) {
+      background: #00aeff;
+      color: #ffffff;
+      border-color: #38bdf8;
+      box-shadow: 0 2px 6px rgba(0, 174, 255, 0.35);
+    }
+
+    :where(#studio-toolbar button[aria-pressed="false"]) {
+      background: transparent;
+      color: #cbd5e1;
+      border-color: transparent;
+    }
+
+    :where(#studio-toolbar .studio-topbar-links) {
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+      margin-left: 6px;
+    }
+
+    :where(#studio-toolbar .studio-topbar-link-btn) {
+      background: transparent;
+      border: none;
+      color: #bae6fd;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 6px;
+      border-radius: 4px;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      opacity: 0.9;
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      cursor: pointer;
+    }
+
+    :where(#studio-toolbar .studio-topbar-link-btn:hover) {
+      opacity: 1;
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.14);
+    }
+
+    :where(#btn-export-html) {
+      background: linear-gradient(90deg, #00aeff, #1289f6);
+      border-color: transparent;
+    }
+
+    :where(body > div.flex-1) {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      position: relative;
+      overflow: hidden;
+    }
+
+    :where(#editor-sidebar) {
+      width: 392px;
+      max-width: 92vw;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      background: #ffffff;
+      border-right: 1px solid var(--studio-border);
+      overflow: hidden;
+    }
+
+    :where(#editor-sidebar > div:first-child) {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 4px;
+      padding: 6px;
+      background: #f4f7fb;
+      border-bottom: 1px solid var(--studio-border);
+      flex-shrink: 0;
+    }
+
+    :where(#editor-sidebar .editor-tab-btn) {
+      padding: 8px;
+      border-radius: 8px;
+      border: 1px solid transparent;
+      background: transparent;
+      color: #475569;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    :where(#editor-sidebar .editor-tab-btn[aria-selected="true"]) {
+      background: #ffffff;
+      color: #1289f6;
+      border-color: rgba(186, 230, 253, 0.9);
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
+    }
+
+    :where(#editor-tab-body) {
+      flex: 1;
+      overflow-y: auto;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    :where(#editor-tab-body input[type="text"], #editor-tab-body textarea, #editor-tab-body select) {
+      width: 100%;
+      padding: 6px 10px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      font-size: 12px;
+      background: #ffffff;
+      color: #1b2b44;
+    }
+
+    :where(#editor-tab-body select[data-attr-cat]) {
+      width: auto;
+      max-width: 140px;
+      min-width: 0;
+    }
+
+    :where(#editor-tab-body label[data-chip-color], #editor-tab-body label:has(> .sr-only)) {
+      position: relative;
+    }
+
+    :where(#editor-tab-body [data-spec-row]) {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    :where(#editor-tab-body [data-spec-row] input[data-spec-key="label"]) {
+      width: 38%;
+      flex-shrink: 0;
+    }
+
+    :where(#editor-tab-body [data-spec-row] input[data-spec-key="value"]) {
+      flex: 1;
+      min-width: 0;
+      width: auto;
+    }
+
+    :where(#editor-tab-body button) {
+      cursor: pointer;
+    }
+
+    :where(#editor-tab-body [data-char-item]) {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    :where(#editor-tab-body button[data-select-char]) {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex: 1;
+      min-width: 0;
+      padding: 0;
+      border: none;
+      background: transparent;
+      text-align: left;
+    }
+
+    :where(#preview-pane) {
+      flex: 1;
+      min-width: 0;
+      overflow-y: auto;
+      background: #f4f7fb;
+      display: flex;
+      flex-direction: column;
+    }
+
+    :where(#archive-app) {
+      flex: 1 0 auto;
+      min-height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    :where(dialog#studio-confirm-modal > div:first-child, dialog#studio-export-dialog > div:first-child) {
+      height: 6px;
+      width: 100%;
+      background: linear-gradient(90deg, #00aeff, #1289f6);
+    }
+
+    :where(dialog#studio-confirm-modal .p-5, dialog#studio-export-dialog form) {
+      padding: 20px;
+    }
+
+    :where(dialog#studio-confirm-modal .flex.items-start, dialog#studio-export-dialog form > div:first-child) {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    :where(#confirm-icon-wrap, dialog#studio-export-dialog form > div:first-child > div:first-child) {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      background: #e0f2fe;
+      color: #0284c7;
+    }
+
+    :where(#confirm-icon-wrap.bg-rose-100) {
+      background: #ffe4e6;
+      color: #e11d48;
+    }
+
+    :where(#confirm-title, #export-dialog-title) {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 800;
+      color: #1b2b44;
+    }
+
+    :where(#confirm-message) {
+      margin: 6px 0 0;
+      font-size: 13px;
+      color: #475569;
+      line-height: 1.6;
+      white-space: pre-line;
+    }
+
+    :where(dialog#studio-confirm-modal .flex.justify-end, dialog#studio-export-dialog .flex.justify-end) {
+      margin-top: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
+    :where(#confirm-cancel-btn, #confirm-ok-btn, #export-cancel-btn, #export-ok-btn) {
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+    }
+
+    :where(#confirm-cancel-btn, #export-cancel-btn) {
+      background: #f1f5f9;
+      color: #475569;
+    }
+
+    :where(#confirm-ok-btn, #export-ok-btn) {
+      background: #1289f6;
+      color: #ffffff;
+    }
+
+    :where(#confirm-ok-btn.bg-rose-600) {
+      background: #e11d48;
+      color: #ffffff;
+    }
+
+    :where(#export-filename-form .mt-4) {
+      margin-top: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    :where(#export-filename-form .flex.items-center) {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    :where(dialog#studio-confirm-modal, dialog#studio-export-dialog, dialog#studio-about-dialog, dialog#studio-help-dialog) {
+      padding: 0;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      width: calc(100% - 2rem);
+      background: #ffffff;
+      color: #1b2b44;
+      overflow: hidden;
+      box-shadow: 0 24px 55px rgba(10, 22, 42, 0.35);
+    }
+
+    :where(dialog#studio-confirm-modal, dialog#studio-export-dialog, dialog#studio-about-dialog) {
+      max-width: 28rem;
+    }
+
+    :where(dialog#studio-help-dialog) {
+      max-width: 48rem;
+      max-height: 88vh;
+      max-height: 88dvh;
+    }
+
+    :where(dialog#studio-help-dialog[open]) {
+      display: flex;
+      flex-direction: column;
+    }
+
+    dialog#studio-confirm-modal:not([open]),
+    dialog#studio-export-dialog:not([open]),
+    dialog#studio-about-dialog:not([open]),
+    dialog#studio-help-dialog:not([open]) {
+      display: none;
+    }
+
+    dialog#studio-confirm-modal::backdrop,
+    dialog#studio-export-dialog::backdrop,
+    dialog#studio-about-dialog::backdrop,
+    dialog#studio-help-dialog::backdrop {
+      background: rgba(15, 28, 48, 0.6);
+      backdrop-filter: blur(4px);
+    }
+
+    :where(dialog#studio-confirm-modal button, dialog#studio-export-dialog button, dialog#studio-about-dialog button, dialog#studio-help-dialog button) {
+      cursor: pointer;
+    }
+
+    :where(dialog#studio-about-dialog > div:first-child, dialog#studio-help-dialog > div:first-child) {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      background: #142238;
+      color: #ffffff;
+      border-bottom: 2px solid #00aeff;
+    }
+
+    :where(dialog#studio-about-dialog > div:first-child button, dialog#studio-help-dialog > div:first-child button) {
+      background: rgba(255, 255, 255, 0.16);
+      color: #ffffff;
+      border: none;
+      border-radius: 6px;
+      padding: 4px 10px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    :where(dialog#studio-about-dialog > div:nth-child(2)) {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    :where(dialog#studio-about-dialog .flex.justify-between) {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    /* ヘルプモーダル内部スタイル */
+    .studio-help-toc-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      padding: 10px 18px;
+      background: #f8fafd;
+      border-bottom: 1px solid #e2e8f0;
+      flex-shrink: 0;
+    }
+
+    .studio-help-toc-btn {
+      font-size: 11px;
+      font-weight: 700;
+      color: #334155;
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 9999px;
+      padding: 3px 10px;
+      transition: all 0.15s ease;
+    }
+
+    .studio-help-toc-btn:hover {
+      border-color: #00aeff;
+      color: #1289f6;
+      background: #f0f9ff;
+    }
+
+    .studio-help-body {
+      overflow-y: auto;
+      padding: 20px 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+      font-size: 13px;
+      line-height: 1.65;
+      color: #1b2b44;
+    }
+
+    .studio-help-section-title {
+      margin: 0 0 8px;
+      font-size: 15px;
+      font-weight: 800;
+      color: #142238;
+      padding-bottom: 6px;
+      border-bottom: 2px solid #e0f2fe;
+    }
+
+    .studio-help-lead-box {
+      background: #f8fafd;
+      border: 1px solid #dce6f2;
+      border-left: 4px solid #00aeff;
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-size: 12.5px;
+      color: #334155;
+    }
+
+    .studio-help-alert-box {
+      background: #fffbeb;
+      border: 1px solid #fcd34d;
+      border-left: 4px solid #f59e0b;
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-size: 12.5px;
+      color: #78350f;
+      margin-bottom: 12px;
+    }
+
+    .studio-help-step-card,
+    .studio-help-faq-item,
+    .studio-help-terms-item {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 11px 14px;
+    }
+
+    .studio-help-step-badge {
+      display: inline-block;
+      background: linear-gradient(90deg, #00aeff, #1289f6);
+      color: #ffffff;
+      font-size: 10px;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 9999px;
+      margin-right: 6px;
+    }
+
+    .studio-help-faq-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 20px;
+      height: 20px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+
+    :where(#studio-toast-container) {
+      position: fixed;
+      bottom: 16px;
+      right: 16px;
+      z-index: 10001;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-width: 24rem;
+      width: calc(100vw - 2rem);
+      pointer-events: none;
+    }
+
+    :where(#studio-toast-container .studio-toast) {
+      pointer-events: auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 16px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 700;
+      line-height: 1.5;
+      color: #ffffff;
+      background: #142238;
+      border-left: 4px solid #00aeff;
+      box-shadow: 0 12px 30px rgba(10, 22, 42, 0.28);
+    }
+
+    :where(#studio-toast-container .studio-toast[data-toast-type="warning"]) {
+      background: #451a03;
+      color: #fffbeb;
+      border-left-color: #fbbf24;
+    }
+
+    :where(#studio-toast-container .studio-toast[data-toast-type="error"]) {
+      background: #4c0519;
+      color: #fff1f2;
+      border-left-color: #fb7185;
+    }
+
+    :where(#studio-toast-container .studio-toast button) {
+      background: transparent;
+      border: none;
+      color: rgba(255, 255, 255, 0.72);
+      font-size: 16px;
+      line-height: 1;
+      padding: 0 2px;
+      cursor: pointer;
+    }
+
+    /* Tailwind未読込時にSVG/サムネイルが巨大化しないよう幅・高さ・状態フォールバック */
+    :where(.w-2) { width: 0.5rem; }
+    :where(.h-2) { height: 0.5rem; }
+    :where(.w-3) { width: 0.75rem; }
+    :where(.h-3) { height: 0.75rem; }
+    :where(.w-3\.5) { width: 0.875rem; }
+    :where(.h-3\.5) { height: 0.875rem; }
+    :where(.w-4) { width: 1rem; }
+    :where(.h-4) { height: 1rem; }
+    :where(.w-5) { width: 1.25rem; }
+    :where(.h-5) { height: 1.25rem; }
+    :where(.w-6) { width: 1.5rem; }
+    :where(.h-6) { height: 1.5rem; }
+    :where(.w-7) { width: 1.75rem; }
+    :where(.h-7) { height: 1.75rem; }
+    :where(.w-8) { width: 2rem; }
+    :where(.h-8) { height: 2rem; }
+    :where(.w-9) { width: 2.25rem; }
+    :where(.h-9) { height: 2.25rem; }
+    :where(.w-12) { width: 3rem; }
+    :where(.h-12) { height: 3rem; }
+    :where(.h-16) { height: 4rem; }
+    :where(.rounded-full) { border-radius: 9999px; }
+    :where(.block) { display: block; }
+
+    :where([data-color-preset], [data-color-history], [data-attr-color-history], [data-site-accent]) {
+      width: 1.5rem;
+      height: 1.5rem;
+      border-radius: 6px;
+      border: 2px solid #ffffff;
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.12);
+      display: inline-block;
+      flex-shrink: 0;
+    }
+
+    :where([data-bg-pattern]) {
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #e2e8f0;
+      background: #ffffff;
+      color: #475569;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      text-align: left;
+    }
+
+    :where([data-bg-pattern][aria-pressed="true"]) {
+      background: #f0f9ff;
+      border-color: #00aeff;
+      color: #1b2b44;
+    }
+
+    :where([data-bg-pattern] > span:last-child) {
+      width: 1rem;
+      height: 1rem;
+      border-radius: 9999px;
+      border: 2px solid #cbd5e1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    :where([data-bg-pattern][aria-pressed="true"] > span:last-child) {
+      border-color: #00aeff;
+    }
+
+    :where([data-bg-pattern][aria-pressed="true"] > span:last-child > span) {
+      width: 0.5rem;
+      height: 0.5rem;
+      border-radius: 9999px;
+      background: #00aeff;
+      display: block;
+    }
+
+    :where(#editor-tab-body [data-default-view-mode]) {
+      padding: 8px 6px;
+      border-radius: 8px;
+      border: 1px solid #e2e8f0;
+      background: #ffffff;
+      color: #475569;
+      font-size: 11px;
+      font-weight: 800;
+      text-align: center;
+    }
+
+    :where(#editor-tab-body [data-default-view-mode][aria-pressed="true"]) {
+      background: #f0f9ff;
+      border-color: #00aeff;
+      color: #1289f6;
+    }
+
+    :where(#badge-char-detail-link, #badge-site-home-link, #badge-site-home2-link) {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 9999px;
+      font-size: 10px;
+      font-weight: 800;
+      background: rgba(226, 232, 240, 0.85);
+      color: #64748b;
+    }
+
+    :where(#badge-char-detail-link[data-link-state="on"], #badge-site-home-link[data-link-state="on"], #badge-site-home2-link[data-link-state="on"]) {
+      background: #e0f2fe;
+      color: #1289f6;
+    }
+
+    :where(#badge-char-detail-link[data-link-state="invalid"], #badge-site-home-link[data-link-state="invalid"], #badge-site-home2-link[data-link-state="invalid"]) {
+      background: #ffe4e6;
+      color: #e11d48;
+    }
+
+    :where(#mobile-sidebar-backdrop) {
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      background: rgba(15, 23, 42, 0.5);
+    }
+
+    /* ドラッグ＆ドロップ並び替え用スタイル（オフライン完結） */
+    .cas-drag-handle {
+      cursor: grab;
+      touch-action: none;
+      user-select: none;
+      -webkit-user-select: none;
+      flex-shrink: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .cas-drag-handle:active {
+      cursor: grabbing;
+    }
+
+    .cas-drag-source {
+      opacity: 0.35;
+    }
+
+    .cas-drag-ghost {
+      position: fixed;
+      z-index: 9999;
+      pointer-events: none;
+      margin: 0;
+      opacity: 0.94;
+      background: #ffffff;
+      border-radius: 10px;
+      box-shadow: 0 14px 30px rgba(15, 23, 42, 0.22);
+      border: 1.5px solid #00aeff;
+    }
+
+    .cas-drop-indicator {
+      height: 3px;
+      border-radius: 9999px;
+      background: #00aeff;
+      box-shadow: 0 0 0 2px rgba(0, 174, 255, 0.18);
+      pointer-events: none;
+      margin: 2px 0;
+    }
+
+    .cas-drop-zone-active {
+      outline: 2px dashed #00aeff;
+      outline-offset: 2px;
+      background: rgba(240, 249, 255, 0.85);
+    }
+
+    @keyframes casDropFlash {
+      0% {
+        box-shadow: 0 0 0 2px #00aeff;
+        background-color: #e0f2fe;
+      }
+      100% {
+        box-shadow: none;
+      }
+    }
+
+    .cas-just-dropped {
+      animation: casDropFlash 0.75s ease-out;
+    }
+
+    @media (min-width: 640px) {
+      .sm\:block { display: block; }
+    }
+
+    @media (min-width: 768px) {
+      .md\:hidden { display: none; }
+      .md\:inline { display: inline; }
+      .md\:inline-block { display: inline-block; }
+    }
+
+    @media (min-width: 1024px) {
+      #btn-mobile-sidebar,
+      #mobile-sidebar-backdrop,
+      .lg\:hidden {
+        display: none;
+      }
+    }
+
+    @media (min-width: 1280px) {
+      .xl\:inline { display: inline; }
+    }
+
+    @media (max-width: 1023px) {
+      #editor-sidebar {
+        position: fixed;
+        top: var(--studio-toolbar-h, 52px);
+        bottom: 0;
+        left: 0;
+        z-index: 30;
+        transform: translateX(-100%);
+        transition: transform 0.2s ease-out;
+      }
+      #editor-sidebar:not(.-translate-x-full) {
+        transform: translateX(0);
+      }
+    }
+  </style>
+
+  <!-- ライブプレビューおよび書き出しHTMLで共通利用するビューアCSS（JSから動的注入） -->
+  <style id="viewer-shared-styles"></style>
+</head>
+<body class="h-screen flex flex-col overflow-hidden edit-mode-active">
+
+  <!-- =====================================================================
+       上部エディタツールバー
+       ===================================================================== -->
+  <header id="studio-toolbar" class="relative z-40 flex-shrink-0 bg-[#142238] text-white border-b border-sky-400/30 shadow-md">
+    <!-- 上端シアンライン -->
+    <div class="h-0.5 w-full bg-gradient-to-r from-[#00AEFF] via-[#38BDF8] to-[#1289F6]"></div>
+
+    <div class="px-3 sm:px-4 py-2 flex flex-wrap items-center justify-between gap-2">
+      <!-- 左側：ロゴ・モバイルサイドバートグル・モード切替 -->
+      <div class="flex items-center gap-2 sm:gap-3">
+        <!-- モバイル用エディタ開閉ボタン -->
+        <button id="btn-mobile-sidebar" type="button" aria-expanded="false" aria-controls="editor-sidebar" aria-label="エディタを開閉" class="lg:hidden inline-flex items-center justify-center p-2 rounded-lg bg-white/10 hover:bg-white/20 text-sky-300 transition" title="エディタを開閉">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h10"/></svg>
+        </button>
+
+        <!-- スタジオタイトル -->
+        <div class="flex items-center gap-2 select-none">
+          <div class="w-7 h-7 rounded-md bg-gradient-to-br from-[#00AEFF] to-[#1289F6] flex items-center justify-center shadow-sm transform -skew-x-12">
+            <svg class="w-4 h-4 text-white transform skew-x-12" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 3l8 4.5v9L12 21l-8-4.5v-9L12 3z"/>
+            </svg>
+          </div>
+          <div class="leading-tight">
+            <div class="text-xs sm:text-sm font-extrabold tracking-wider flex items-center gap-1.5 flex-wrap" style="font-family: 'Chakra Petch', sans-serif;">
+              <span>POLE GIRLS ARCHIVE</span>
+              <span class="hidden md:inline-block text-[10px] px-1.5 py-0.5 rounded bg-sky-500/20 text-sky-300 border border-sky-400/30 font-semibold">BUILDER</span>
+              <span class="studio-topbar-links inline-flex items-center gap-0.5 ml-1" style="font-family: 'Noto Sans JP', sans-serif;">
+                <button id="btn-studio-about" type="button" class="studio-topbar-link-btn text-[11px] font-semibold text-sky-200/90 hover:text-white hover:bg-white/10 px-1.5 py-0.5 rounded underline underline-offset-2 transition">このツールについて</button>
+                <button id="btn-studio-help" type="button" class="studio-topbar-link-btn text-[11px] font-semibold text-sky-200/90 hover:text-white hover:bg-white/10 px-1.5 py-0.5 rounded underline underline-offset-2 transition inline-flex items-center gap-0.5"><svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/></svg>ヘルプ</button>
+              </span>
+            </div>
+            <div id="autosave-status" class="text-[10px] text-slate-300/80 hidden sm:block">自動保存: 準備完了</div>
+          </div>
+        </div>
+
+        <!-- 編集 / プレビュー 切替スイッチ -->
+        <div class="ml-1 sm:ml-3 inline-flex items-center bg-[#0c1626] p-1 rounded-lg border border-white/10">
+          <button id="btn-mode-edit" type="button" aria-pressed="true" class="px-2.5 sm:px-3 py-1.5 text-xs font-bold rounded-md transition flex items-center gap-1.5 bg-[#00AEFF] text-white shadow">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536M9 11l6.232-6.232a2.5 2.5 0 113.536 3.536L12.536 14.536a4 4 0 01-1.789 1.033L7 16.5l.931-3.747A4 4 0 019 11z"/></svg>
+            <span>編集モード</span>
+          </button>
+          <button id="btn-mode-preview" type="button" aria-pressed="false" class="px-2.5 sm:px-3 py-1.5 text-xs font-bold rounded-md transition flex items-center gap-1.5 text-slate-300 hover:text-white">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+            <span>プレビュー</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- 右側：読込・保存・リセット・HTML書き出し -->
+      <div class="flex items-center gap-1.5 sm:gap-2">
+        <button id="btn-import-data" type="button" class="px-2.5 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-xs font-semibold text-slate-100 transition flex items-center gap-1.5 border border-white/10" title="JSONまたは書き出し済みHTMLファイルを読み込んで再編集">
+          <svg class="w-3.5 h-3.5 text-sky-300" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5-5m0 0l5 5m-5-5v12"/></svg>
+          <span class="hidden md:inline">データ読込</span>
+          <span class="md:hidden">読込</span>
+        </button>
+
+        <button id="btn-save-json" type="button" class="px-2.5 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-xs font-semibold text-slate-100 transition flex items-center gap-1.5 border border-white/10" title="現在の設定データをJSONファイルとして保存">
+          <svg class="w-3.5 h-3.5 text-emerald-300" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/></svg>
+          <span class="hidden md:inline">設定保存(JSON)</span>
+          <span class="md:hidden">JSON</span>
+        </button>
+
+        <button id="btn-reset-data" type="button" class="px-2.5 py-1.5 rounded-lg bg-white/5 hover:bg-rose-500/20 text-xs font-semibold text-slate-300 hover:text-rose-200 transition flex items-center gap-1 border border-white/10" title="初期データにリセット">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+          <span class="hidden xl:inline">リセット</span>
+        </button>
+
+        <button id="btn-export-html" type="button" class="ml-0.5 px-3 sm:px-4 py-1.5 rounded-lg bg-gradient-to-r from-[#00AEFF] to-[#1289F6] hover:from-[#1cc0ff] hover:to-[#2495ff] text-white text-xs sm:text-sm font-extrabold shadow-lg shadow-sky-500/30 transition transform active:scale-95 flex items-center gap-1.5">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V3"/></svg>
+          <span>公開用HTMLを書き出す</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- =====================================================================
+       メインワークスペース（左サイドバー + 右ライブプレビュー）
+       ===================================================================== -->
+  <div class="flex-1 flex min-h-0 relative overflow-hidden">
+
+    <!-- モバイル用サイドバー背景オーバーレイ -->
+    <div id="mobile-sidebar-backdrop" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-20 lg:hidden"></div>
+
+    <!-- 左サイドバー：ビジュアルエディタ -->
+    <aside id="editor-sidebar" class="fixed lg:static inset-y-0 left-0 lg:top-0 z-30 w-[340px] sm:w-[392px] max-w-[92vw] bg-white border-r border-slate-200 shadow-xl lg:shadow-none flex flex-col transition-transform duration-200 ease-out -translate-x-full lg:translate-x-0">
+      <!-- エディタタブヘッダー -->
+      <div class="flex-shrink-0 grid grid-cols-3 bg-[#F4F7FB] border-b border-slate-200 p-1.5 gap-1" role="tablist">
+        <button data-tab="characters" type="button" role="tab" aria-selected="true" class="editor-tab-btn py-2 px-2 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1.5 bg-white text-[#1289F6] shadow-sm border border-sky-200/80">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+          <span>キャラ編集</span>
+        </button>
+        <button data-tab="attributes" type="button" role="tab" aria-selected="false" class="editor-tab-btn py-2 px-2 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1.5 text-slate-600 hover:bg-white/70">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
+          <span>カテゴリ</span>
+        </button>
+        <button data-tab="site" type="button" role="tab" aria-selected="false" class="editor-tab-btn py-2 px-2 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1.5 text-slate-600 hover:bg-white/70">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+          <span>サイト設定</span>
+        </button>
+      </div>
+
+      <!-- タブコンテンツ領域（スクロール可能） -->
+      <div id="editor-tab-body" class="flex-1 overflow-y-auto studio-scroll p-3.5 space-y-4">
+        <!-- JSで各タブ内容を動的に描画 -->
+      </div>
+    </aside>
+
+    <!-- 右側：ライブプレビュー表示領域 -->
+    <div id="preview-pane" class="flex-1 min-w-0 overflow-y-auto studio-scroll relative bg-[#F4F7FB]">
+      <!-- 公開ページと完全に同一構造のルートコンテナ -->
+      <div id="archive-app"></div>
+    </div>
+  </div>
+
+  <!-- =====================================================================
+       隠しファイル入力要素（JSON/HTML読込・画像アップロード用）
+       ===================================================================== -->
+  <input id="input-import-file" type="file" accept=".json,.html,.htm,application/json,text/html" class="hidden" />
+  <input id="input-image-upload" type="file" accept="image/*" class="hidden" />
+
+  <!-- =====================================================================
+       カスタム確認ダイアログ（ネイティブ <dialog>・alert/confirm代替）
+       ===================================================================== -->
+  <dialog id="studio-confirm-modal" aria-labelledby="confirm-title" aria-describedby="confirm-message">
+    <div class="h-1.5 bg-gradient-to-r from-[#00AEFF] to-[#1289F6]"></div>
+    <div class="p-5">
+      <div class="flex items-start gap-3">
+        <div id="confirm-icon-wrap" class="flex-shrink-0 w-10 h-10 rounded-xl bg-sky-100 text-sky-600 flex items-center justify-center">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        </div>
+        <div class="min-w-0 flex-1">
+          <h3 id="confirm-title" class="text-base font-extrabold text-[#1B2B44]">確認</h3>
+          <p id="confirm-message" class="mt-1.5 text-sm text-slate-600 leading-relaxed whitespace-pre-line"></p>
+        </div>
+      </div>
+      <div class="mt-5 flex items-center justify-end gap-2">
+        <button id="confirm-cancel-btn" type="button" class="px-4 py-2 rounded-lg text-xs font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 transition">キャンセル</button>
+        <button id="confirm-ok-btn" type="button" class="px-4 py-2 rounded-lg text-xs font-bold text-white bg-[#1289F6] hover:bg-[#0d77db] shadow-sm transition">実行する</button>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- =====================================================================
+       公開用HTML書き出し ファイル名指定ダイアログ（ネイティブ <dialog>）
+       ===================================================================== -->
+  <dialog id="studio-export-dialog" aria-labelledby="export-dialog-title">
+    <div class="h-1.5 bg-gradient-to-r from-[#00AEFF] to-[#1289F6]"></div>
+    <form id="export-filename-form" class="p-5">
+      <div class="flex items-start gap-3">
+        <div class="flex-shrink-0 w-10 h-10 rounded-xl bg-sky-100 text-sky-600 flex items-center justify-center">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V3"/></svg>
+        </div>
+        <div class="min-w-0 flex-1">
+          <h3 id="export-dialog-title" class="text-base font-extrabold text-[#1B2B44]">公開用HTMLの書き出し</h3>
+          <p class="mt-1 text-xs text-slate-600 leading-relaxed">書き出すファイル名を入力してください（半角英小文字・数字・<code>_</code>・<code>-</code>）。</p>
+        </div>
+      </div>
+
+      <div class="mt-4 space-y-2">
+        <label for="export-filename-input" class="block text-[11px] font-bold text-slate-600">ファイル名</label>
+        <div class="flex items-center gap-1.5">
+          <input id="export-filename-input" type="text" value="pole-girls-archive" placeholder="pole-girls-archive" autocomplete="off" spellcheck="false" class="flex-1 min-w-0 px-3 py-2 text-xs font-mono font-bold text-[#1B2B44] rounded-lg border border-slate-300 bg-white focus:border-[#00AEFF] focus:ring-2 focus:ring-sky-200/60 focus:outline-none" />
+          <span class="text-xs font-mono font-bold text-slate-500 flex-shrink-0">.html</span>
+        </div>
+        <div class="text-[11px] text-slate-500">
+          出力ファイル名: <code id="export-filename-preview" class="font-mono font-bold text-[#1289F6]">pole-girls-archive.html</code>
+        </div>
+      </div>
+
+      <div class="mt-5 flex items-center justify-end gap-2">
+        <button id="export-cancel-btn" type="button" class="px-4 py-2 rounded-lg text-xs font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 transition">キャンセル</button>
+        <button id="export-ok-btn" type="submit" class="px-4 py-2 rounded-lg text-xs font-bold text-white bg-[#1289F6] hover:bg-[#0d77db] shadow-sm transition">書き出す</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- =====================================================================
+       このツールについて モーダル（ネイティブ <dialog>）
+       ===================================================================== -->
+  <dialog id="studio-about-dialog" aria-labelledby="about-dialog-title">
+    <div class="flex items-center justify-between px-4 py-3 bg-[#142238] text-white border-b-2 border-[#00AEFF]">
+      <span id="about-dialog-title" class="text-sm font-extrabold">このツールについて</span>
+      <button id="about-close-btn" type="button" class="px-2.5 py-1 rounded-md text-xs font-bold bg-white/15 hover:bg-white/25 text-white transition">× 閉じる</button>
+    </div>
+    <div class="p-5 space-y-4">
+      <div class="text-center py-1">
+        <div class="inline-flex w-11 h-11 rounded-xl bg-gradient-to-br from-[#00AEFF] to-[#1289F6] items-center justify-center shadow mb-2">
+          <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3l8 4.5v9L12 21l-8-4.5v-9L12 3z"/></svg>
+        </div>
+        <h3 class="text-base font-extrabold text-[#1B2B44]">POLE GIRLS ARCHIVE BUILDER</h3>
+        <div class="text-xs text-slate-500 mt-0.5">「架線柱ちゃん」アーカイブページ制作ツール</div>
+      </div>
+
+      <div class="bg-[#F8FAFD] border border-slate-200 rounded-xl p-3.5 space-y-2 text-xs">
+        <div class="flex items-center justify-between gap-3">
+          <span class="text-slate-500 font-semibold">ツール名</span>
+          <span class="font-bold text-[#1B2B44] text-right">POLE GIRLS ARCHIVE BUILDER</span>
+        </div>
+        <div class="flex items-center justify-between gap-3">
+          <span class="text-slate-500 font-semibold">バージョン名</span>
+          <span id="about-version-text" class="font-mono font-extrabold text-[#1289F6]">Ver.0.51b</span>
+        </div>
+        <div class="flex items-center justify-between gap-3">
+          <span class="text-slate-500 font-semibold">最終更新日</span>
+          <span id="about-updated-text" class="text-[#1B2B44] font-semibold">2026年11月20日</span>
+        </div>
+        <div class="flex items-center justify-between gap-3">
+          <span class="text-slate-500 font-semibold">著作権表記</span>
+          <span class="text-[#1B2B44] font-semibold">(C)しーさいど</span>
+        </div>
+        <div class="flex items-center justify-between gap-3">
+          <span class="text-slate-500 font-semibold">ライセンス</span>
+          <span class="text-[#1B2B44] font-semibold">MIT License</span>
+        </div>
+      </div>
+
+      <p class="text-xs text-slate-600 leading-relaxed m-0">
+        オリジナルキャラクターや擬人化キャラクターの図鑑・アーカイブ紹介ページをノーコードで作成し、外部依存のない単一HTMLファイルとして書き出してそのまま公開できる制作ツールです。
+      </p>
+    </div>
+  </dialog>
+
+  <!-- =====================================================================
+       ヘルプ・ご利用ガイド モーダル（ネイティブ <dialog>）
+       ===================================================================== -->
+  <dialog id="studio-help-dialog" aria-labelledby="help-dialog-title">
+    <div class="flex items-center justify-between px-4 py-3 bg-[#142238] text-white border-b-2 border-[#00AEFF] flex-shrink-0">
+      <div id="help-dialog-title" class="flex items-center gap-1.5 text-sm font-extrabold">
+        <svg class="w-4 h-4 text-sky-300" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/></svg>
+        <span>ヘルプ・ご利用ガイド</span>
+      </div>
+      <button id="help-close-btn" type="button" class="px-2.5 py-1 rounded-md text-xs font-bold bg-white/15 hover:bg-white/25 text-white transition">× 閉じる</button>
+    </div>
+
+    <!-- クイックジャンプ目次バー -->
+    <div class="studio-help-toc-bar">
+      <span class="text-[11px] font-extrabold text-slate-500">目次</span>
+      <button type="button" class="studio-help-toc-btn" data-help-target="helpSecIntro">0. はじめに</button>
+      <button type="button" class="studio-help-toc-btn" data-help-target="helpSecSteps">1. 使い方の流れ</button>
+      <button type="button" class="studio-help-toc-btn" data-help-target="helpSecBackup">2. データ保存</button>
+      <button type="button" class="studio-help-toc-btn" data-help-target="helpSecFaq">3. よくある質問</button>
+      <button type="button" class="studio-help-toc-btn" data-help-target="helpSecTerms">4. ご利用について</button>
+    </div>
+
+    <div id="help-modal-body" class="studio-help-body studio-scroll">
+      <!-- セクション0: 0. はじめに -->
+      <section id="helpSecIntro">
+        <h3 class="studio-help-section-title">0. はじめに</h3>
+        <div class="studio-help-lead-box">
+          <p class="m-0">このアーカイブページ制作ツールは、作者（しーさいど）が「架線柱ちゃん」をはじめとするキャラクター図鑑・紹介ページを手作業のHTML更新なしに維持管理し、そのまま1ファイルで公開できるようにするために制作したものです。作成にあたってはAIを活用しています。</p>
+        </div>
+      </section>
+
+      <!-- セクション1: 【1. 使い方の流れ（かんたん4ステップ）】 -->
+      <section id="helpSecSteps" class="space-y-2.5">
+        <h3 class="studio-help-section-title">1. 使い方の流れ（かんたん4ステップ）</h3>
+        <p class="text-xs text-slate-500 m-0">初めての方でも迷わずキャラクターアーカイブページを作れる基本の4ステップです。</p>
+
+        <div class="space-y-2.5">
+          <div class="studio-help-step-card">
+            <div class="flex items-center mb-1.5">
+              <span class="studio-help-step-badge">Step 1</span>
+              <h4 class="text-xs font-extrabold text-[#1B2B44] m-0">サイト全体の設定（タイトル・デザイン）</h4>
+            </div>
+            <ul class="text-xs text-slate-600 space-y-1 pl-4 m-0 list-disc">
+              <li>左サイドバーの「サイト設定」タブで、サイトタイトル・サブタイトル・装飾バッジ・フッター表記などを編集します。</li>
+              <li>アクセントカラーや背景パターン（グリッド／ドット／斜線）、別窓の見出し・ナンバリング書式・画像タブ名も好みに合わせて即時プレビューされます。</li>
+            </ul>
+          </div>
+
+          <div class="studio-help-step-card">
+            <div class="flex items-center mb-1.5">
+              <span class="studio-help-step-badge">Step 2</span>
+              <h4 class="text-xs font-extrabold text-[#1B2B44] m-0">大カテゴリ・小カテゴリの登録と並び替え</h4>
+            </div>
+            <ul class="text-xs text-slate-600 space-y-1 pl-4 m-0 list-disc">
+              <li>「カテゴリ」タブで分類軸となる「大カテゴリ」と、検索・絞り込み用の「小カテゴリ（タグ名・カラー）」を登録します。</li>
+              <li>各行左端のグリップ（<code>⋮⋮</code>）をドラッグ＆ドロップ（または「↑」「↓」）して順番を変更でき、小カテゴリは別の大カテゴリへそのままドラッグして所属を移動することもできます。</li>
+            </ul>
+          </div>
+
+          <div class="studio-help-step-card">
+            <div class="flex items-center mb-1.5">
+              <span class="studio-help-step-badge">Step 3</span>
+              <h4 class="text-xs font-extrabold text-[#1B2B44] m-0">キャラクターの登録と画像設定</h4>
+            </div>
+            <ul class="text-xs text-slate-600 space-y-1 pl-4 m-0 list-disc">
+              <li>「キャラ編集」タブの「＋ 新規キャラ」から名前・キャッチコピー・スペック項目・紹介文を入力し、該当する小カテゴリにチェックを入れます。</li>
+              <li>一覧カード用アイコン画像、別窓表示用のプロフィール画像1・画像2（タブ切替用・任意）は、<code>img/</code> フォルダ内の画像ファイルをパス指定で参照する方式を推奨しています（オプションとして「画像アップロード」によるHTML内へのBase64埋め込みも利用できます）。別ページへ誘導する「詳細解説リンク」もURL入力で自動表示されます。上部の「編集モード / プレビュー」で公開時の見え方や絞り込み検索をすぐ確認できます。</li>
+            </ul>
+          </div>
+
+          <div class="studio-help-step-card">
+            <div class="flex items-center mb-1.5">
+              <span class="studio-help-step-badge">Step 4</span>
+              <h4 class="text-xs font-extrabold text-[#1B2B44] m-0">公開用HTMLの書き出しと再編集</h4>
+            </div>
+            <ul class="text-xs text-slate-600 space-y-1 pl-4 m-0 list-disc">
+              <li>右上の「公開用HTMLを書き出す」ボタンからファイル名（半角英数字）を指定すると、CSS・ビューアスクリプト・データをすべて内包した単一HTMLファイルが出力されます。</li>
+              <li>書き出したHTMLはそのままWebサイトやGitHub Pages等へアップロードして公開でき、後日「データ読込」からそのHTMLやJSONを読み込んで続きを編集することもできます。</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- セクション2: 【2. データ保存・バックアップ方法（重要）】 -->
+      <section id="helpSecBackup" class="space-y-2.5">
+        <h3 class="studio-help-section-title">2. データ保存・バックアップ方法（重要）</h3>
+        <div class="studio-help-alert-box space-y-1.5">
+          <div class="font-extrabold">■ データの保持と「設定保存(JSON)」の推奨について（重要）</div>
+          <p class="m-0">編集したキャラクター・画像・カテゴリ・サイト設定などの作業内容は、ブラウザ内のストレージ領域（<code>localStorage</code>）に自動保存されるため、ページを再読み込みしても続きから作業できます（※未編集の初期起動時は保存されません）。</p>
+          <p class="m-0">ただし、<strong>ブラウザの「キャッシュ・閲覧データ削除（サイトデータの消去）」を行ったり、シークレット（プライベート）ウィンドウを閉じたりすると、保持されていたデータが消えてしまう恐れがあります。</strong>また、高解像度画像を多数埋め込むとブラウザ保存容量の上限に達して自動保存がスキップされる場合があります。</p>
+          <p class="m-0">大切なデータの消失を防ぐため、上部ツールバーの <strong>「設定保存(JSON)」</strong> または <strong>「公開用HTMLを書き出す」</strong> から、こまめにローカル環境へファイル保存しておくことを強く推奨します。</p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-xs">
+          <div class="studio-help-step-card">
+            <div class="font-extrabold text-[#1B2B44] mb-1">自動保存（localStorage）</div>
+            <p class="text-slate-600 m-0">入力変更のたびにブラウザ内へ自動保存され、次回起動時に復元されます。</p>
+          </div>
+          <div class="studio-help-step-card">
+            <div class="font-extrabold text-[#1B2B44] mb-1">設定保存(JSON) / データ読込</div>
+            <p class="text-slate-600 m-0">編集データ一式をJSONファイルで保存・復元でき、別PCへの移行やバックアップに最適です。</p>
+          </div>
+          <div class="studio-help-step-card">
+            <div class="font-extrabold text-[#1B2B44] mb-1">書き出し済みHTMLの再読込</div>
+            <p class="text-slate-600 m-0">公開用に出力したHTMLファイル自体にも編集用データが埋め込まれており、そのまま読み込んで再編集できます。</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- セクション3: 【3. よくある質問（FAQ）】 -->
+      <section id="helpSecFaq" class="space-y-2.5">
+        <h3 class="studio-help-section-title">3. よくある質問（FAQ）</h3>
+        <div class="space-y-2 text-xs">
+          <div class="studio-help-faq-item space-y-1.5">
+            <div class="flex items-start gap-2">
+              <span class="studio-help-faq-badge bg-sky-100 text-[#1289F6]">Q</span>
+              <span class="font-extrabold text-[#1B2B44]">画像を外部ファイルとして参照することも、1ファイルに埋め込むこともできますか？</span>
+            </div>
+            <div class="flex items-start gap-2">
+              <span class="studio-help-faq-badge bg-slate-100 text-slate-600">A</span>
+              <span class="text-slate-600">はい。<strong>基本的には <code>img/</code> フォルダに画像を配置し、画像パス・URL欄に <code>img/char_a_icon.webp</code> 等のパスを指定して参照する方式をおすすめしています</strong>（HTMLファイルが軽量になり、画像の差し替えや管理も容易になります）。また、オプションとして「画像アップロード」を使うことで、最適化されたBase64データとしてHTML内へ直接埋め込むことも可能です（PNG/JPEG/WebP/SVG/アニメGIF/アニメWebP対応）。</span>
+            </div>
+          </div>
+
+          <div class="studio-help-faq-item space-y-1.5">
+            <div class="flex items-start gap-2">
+              <span class="studio-help-faq-badge bg-sky-100 text-[#1289F6]">Q</span>
+              <span class="font-extrabold text-[#1B2B44]">紹介文・各種見出し・ナンバリングなどを非表示にできますか？</span>
+            </div>
+            <div class="flex items-start gap-2">
+              <span class="studio-help-faq-badge bg-slate-100 text-slate-600">A</span>
+              <span class="text-slate-600">はい。キャラの「紹介テキスト」や「キャッチコピー」「サブテキスト」を空欄にすると該当欄が非表示になります。また「サイト設定」のカウンターラベル・窓タイトル・ナンバリング書式・スペック欄見出し・紹介文欄見出しも空欄にすることで非表示にできます。</span>
+            </div>
+          </div>
+
+          <div class="studio-help-faq-item space-y-1.5">
+            <div class="flex items-start gap-2">
+              <span class="studio-help-faq-badge bg-sky-100 text-[#1289F6]">Q</span>
+              <span class="font-extrabold text-[#1B2B44]">アップロードした画像やデータが外部に送信されないか心配</span>
+            </div>
+            <div class="flex items-start gap-2">
+              <span class="studio-help-faq-badge bg-slate-100 text-slate-600">A</span>
+              <span class="text-slate-600">すべての画像処理・プレビュー描画・JSON/HTML書き出しはお使いのブラウザ内部（ローカル環境）で完結しており、外部サーバーへデータを送信することは一切ありません。<code>file://</code> でのローカル直接起動・完全オフライン環境でも動作します。</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- セクション4: 【4. ご利用について・動作環境・免責事項】 -->
+      <section id="helpSecTerms" class="space-y-2.5">
+        <h3 class="studio-help-section-title">4. ご利用について・動作環境・免責事項</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
+          <div class="studio-help-terms-item">
+            <div class="font-extrabold text-[#1B2B44] mb-1">利用規約・ライセンス</div>
+            <p class="text-slate-600 m-0">個人・サークル・法人問わず、同人活動・非商用・商用活動において無料でご自由にお使いいただけます（MIT License）。書き出した公開ページのクレジット表記も任意です（「サイト設定」のクレジット表記から変更・非表示にできます）。</p>
+          </div>
+          <div class="studio-help-terms-item">
+            <div class="font-extrabold text-[#1B2B44] mb-1">推奨動作環境</div>
+            <p class="text-slate-600 m-0">Google Chrome, Microsoft Edge, Mozilla Firefox, Safari などの最新ブラウザ（PC環境推奨・スマートフォン閲覧対応）。</p>
+          </div>
+          <div class="studio-help-terms-item sm:col-span-2">
+            <div class="font-extrabold text-[#1B2B44] mb-1">免責事項</div>
+            <p class="text-slate-600 m-0">本ツールの利用により生じたトラブルや損害等について、作者は一切の責任を負いかねます。大切なデータはこまめにJSON保存や公開用HTML書き出しでバックアップをお取りください。</p>
+          </div>
+        </div>
+      </section>
+    </div>
+  </dialog>
+
+  <!-- =====================================================================
+       トースト通知コンテナ
+       ===================================================================== -->
+  <div id="studio-toast-container" role="status" aria-live="polite" aria-atomic="false" class="fixed bottom-4 right-4 z-[10001] flex flex-col gap-2 max-w-sm w-[calc(100vw-2rem)] pointer-events-none"></div>
+
+  <!-- =====================================================================
+       メインアプリケーションスクリプト（file:// 直接実行互換・依存順読込）
+       ===================================================================== -->
+  <script src="js/templates.js" defer></script>
+  <script src="js/viewer-styles.js" defer></script>
+  <script src="js/viewer.js" defer></script>
+  <script src="js/state.js" defer></script>
+  <script src="js/io.js" defer></script>
+  <script src="js/editor.js" defer></script>
+  <script src="js/main.js" defer></script>
+</body>
+</html>
